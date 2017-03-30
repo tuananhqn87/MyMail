@@ -22,8 +22,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.anhtran.mymail.mail.CheckMailLoader;
-import org.anhtran.mymail.mail.MailAdapter;
+import org.anhtran.mymail.loader.CheckMailLoader;
 import org.anhtran.mymail.mail.MailItem;
 
 import java.util.ArrayList;
@@ -38,17 +37,15 @@ public class InboxActivity extends AppCompatActivity implements
     private static final String LOG_TAG = InboxActivity.class.getSimpleName();
 
     private static final int MAIL_LOADER_ID = 1;
-
+    DrawerLayout drawer;
+    NavigationView navigationView;
     private MailAdapter mMailAdapter;
     private Map<Integer, Integer> msgNumbers;
-
     private TextView emptyView;
     private ProgressBar spinner;
     private ListView mMailListView;
     private Toolbar toolbar;
     private FloatingActionButton fab;
-    DrawerLayout drawer;
-    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

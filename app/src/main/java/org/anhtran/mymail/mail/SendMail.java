@@ -1,11 +1,12 @@
-package org.anhtran.mymail.utils;
+package org.anhtran.mymail.mail;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.text.Html;
 import android.widget.Toast;
+
+import org.anhtran.mymail.utils.MailProperties;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -74,14 +75,9 @@ public class SendMail extends AsyncTask<Void, Void, Void> {
      */
     @Override
     protected Void doInBackground(Void... params) {
-        // Declares the properties settings to connect to SMTP server
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.serdao.com");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", "25");
 
         // Create the connection session with SMTP server
-        Session session = Session.getInstance(props,
+        Session session = Session.getInstance(MailProperties.getSimpleSmtp("smtp.serdao.com"),
 
                 // Create an authenticator that is used to authenticate against server
                 new Authenticator() {

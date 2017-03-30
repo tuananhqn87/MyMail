@@ -1,9 +1,10 @@
-package org.anhtran.mymail.mail;
+package org.anhtran.mymail.loader;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 
-import org.anhtran.mymail.utils.FetchMail;
+import org.anhtran.mymail.mail.MailItem;
+import org.anhtran.mymail.mail.FetchMail;
 
 /**
  * Created by anhtran on 3/27/17.

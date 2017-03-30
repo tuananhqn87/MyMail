@@ -1,9 +1,10 @@
-package org.anhtran.mymail.mail;
+package org.anhtran.mymail.loader;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 
-import org.anhtran.mymail.utils.CheckMail;
+import org.anhtran.mymail.mail.MailItem;
+import org.anhtran.mymail.mail.CheckMail;
 
 import java.util.List;
 

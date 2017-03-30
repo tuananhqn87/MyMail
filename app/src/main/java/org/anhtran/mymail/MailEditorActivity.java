@@ -9,9 +9,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-import org.anhtran.mymail.mail.FetchMailByMessageNumberLoader;
+import org.anhtran.mymail.loader.FetchMailByMessageNumberLoader;
 import org.anhtran.mymail.mail.MailItem;
-import org.anhtran.mymail.utils.SendMail;
+import org.anhtran.mymail.mail.SendMail;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
@@ -39,16 +39,9 @@ public class MailEditorActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mail_editor);
+
+        // Init views
         initializeWidgets();
-
-        if(getIntent().hasExtra(KEY_REPLY)) {
-            setTitle(getString(R.string.editor_reply));
-            editorTo.setHint(R.string.editor_loading);
-            editorSubject.setHint(R.string.editor_loading);
-            editorContent.setHint(R.string.editor_reply_message);
-            getLoaderManager().initLoader(MAIL_LOADER_ID, null, this);
-        }
-
     }
 
     @Override
@@ -84,6 +77,17 @@ public class MailEditorActivity extends AppCompatActivity
         editorCc = (EditText) findViewById(R.id.editor_cc);
         editorSubject = (EditText) findViewById(R.id.editor_subject);
         editorContent = (EditText) findViewById(R.id.editor_content);
+
+        // If this activity was called with an intent extra KEY_REPLY
+        // then change the title and chang hints in edit text components
+        // and init loader
+        if (getIntent().hasExtra(KEY_REPLY)) {
+            setTitle(getString(R.string.editor_reply));
+            editorTo.setHint(R.string.editor_loading);
+            editorSubject.setHint(R.string.editor_loading);
+            editorContent.setHint(R.string.editor_reply_message);
+            getLoaderManager().initLoader(MAIL_LOADER_ID, null, this);
+        }
     }
 
     private void sendMail () {

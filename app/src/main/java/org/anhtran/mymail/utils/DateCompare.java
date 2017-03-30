@@ -1,4 +1,4 @@
-package org.anhtran.mymail.mail;
+package org.anhtran.mymail.utils;
 
 import java.util.Comparator;
 

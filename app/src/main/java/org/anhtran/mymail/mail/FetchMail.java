@@ -1,9 +1,7 @@
-package org.anhtran.mymail.utils;
+package org.anhtran.mymail.mail;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
-import org.anhtran.mymail.mail.MailItem;
+import org.anhtran.mymail.utils.MailContent;
+import org.anhtran.mymail.utils.MailProperties;
 
 import java.util.Properties;
 
@@ -37,17 +35,6 @@ public class FetchMail {
         this.password = password;
     }
 
-    private Properties getProperties() {
-        //create properties field
-        Properties properties = new Properties();
-
-        properties.put("mail.imap.host", host);
-        properties.put("mail.imap.port", "143");
-        properties.put("mail.imap.auth", "true");
-
-        return properties;
-    }
-
 
     private void clearContent() {
         content = "";
@@ -58,7 +45,7 @@ public class FetchMail {
 
         try {
 
-            Session emailSession = Session.getInstance(getProperties());
+            Session emailSession = Session.getInstance(MailProperties.getSimpleImap(host));
 
             //create the store object and connect with the server
             Store store = emailSession.getStore(storeType);

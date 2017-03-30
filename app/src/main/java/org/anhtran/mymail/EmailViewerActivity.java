@@ -15,15 +15,14 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
-import org.anhtran.mymail.mail.FetchMailByMessageNumberLoader;
+import org.anhtran.mymail.loader.FetchMailByMessageNumberLoader;
 import org.anhtran.mymail.mail.MailItem;
 
 public class EmailViewerActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<MailItem>{
+    public static final String KEY_EXTRA = "MailMessage";
     private static final String LOG_TAG = InboxActivity.class.getSimpleName();
     private static final int MAIL_LOADER_ID = 1;
-    public static final String KEY_EXTRA = "MailMessage";
-
     // Declares web view where email's content will appear
     private WebView emailViewer;
     // Spinner is used when waiting for loader finished

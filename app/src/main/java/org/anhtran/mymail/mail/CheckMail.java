@@ -1,10 +1,8 @@
-package org.anhtran.mymail.utils;
+package org.anhtran.mymail.mail;
 
 
-import android.util.Log;
-
-import org.anhtran.mymail.mail.DateCompare;
-import org.anhtran.mymail.mail.MailItem;
+import org.anhtran.mymail.utils.DateCompare;
+import org.anhtran.mymail.utils.MailProperties;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,11 +30,7 @@ public class CheckMail{
         try {
 
             //create properties field
-            Properties properties = new Properties();
-
-            properties.put("mail.imap.host", host);
-            properties.put("mail.imap.port", "143");
-            properties.put("mail.imap.auth", "true");
+            Properties properties = MailProperties.getSimpleImap(host);
 
             Session emailSession = Session.getInstance(properties);
 

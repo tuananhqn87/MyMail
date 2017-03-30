@@ -1,4 +1,4 @@
-package org.anhtran.mymail.mail;
+package org.anhtran.mymail;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import org.anhtran.mymail.R;
+import org.anhtran.mymail.mail.MailItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
