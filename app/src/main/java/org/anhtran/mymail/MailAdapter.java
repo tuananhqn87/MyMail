@@ -15,13 +15,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.mail.internet.InternetAddress;
+
 
 /**
  * Created by anhtran on 3/24/17.
  */
 
 public class MailAdapter extends ArrayAdapter {
-    private Map<Integer,Integer> messageNumbers = new HashMap<>();
+    private Map<Integer, Integer> messageNumbers = new HashMap<>();
 
     public MailAdapter(Context context, ArrayList<MailItem> mailItems) {
         super(context, 0, mailItems);
@@ -37,6 +39,7 @@ public class MailAdapter extends ArrayAdapter {
         }
 
         MailItem currentMailItem = (MailItem) getItem(position);
+        String from = currentMailItem.getFrom();
 
         TextView listItemSubject =
                 (TextView) mailItemView.findViewById(R.id.list_item_subject);
@@ -44,7 +47,7 @@ public class MailAdapter extends ArrayAdapter {
 
         TextView listItemSender =
                 (TextView) mailItemView.findViewById(R.id.list_item_sender_name);
-        listItemSender.setText(currentMailItem.getFrom());
+        listItemSender.setText(from);
 
         TextView listItemContent =
                 (TextView) mailItemView.findViewById(R.id.list_item_time);
@@ -52,13 +55,15 @@ public class MailAdapter extends ArrayAdapter {
 
         TextView listItemFirstLetter =
                 (TextView) mailItemView.findViewById(R.id.list_item_first_letter);
-        listItemFirstLetter.setText(currentMailItem.getFrom().substring(0,1).toUpperCase());
+        if (from != null) {
+            listItemFirstLetter.setText(from.substring(0, 1).toUpperCase());
+        }
 
         messageNumbers.put(position, currentMailItem.getMessageNumber());
         return mailItemView;
     }
 
-    public Map<Integer, Integer> getMsgNumbers () {
+    public Map<Integer, Integer> getMsgNumbers() {
         return messageNumbers;
     }
 }

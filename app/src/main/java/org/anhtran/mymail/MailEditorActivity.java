@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-import org.anhtran.mymail.loader.FetchMailByMessageNumberLoader;
+import org.anhtran.mymail.loader.CheckMailLoader;
 import org.anhtran.mymail.mail.MailItem;
 import org.anhtran.mymail.mail.SendMail;
 
@@ -17,9 +17,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
 
-
 public class MailEditorActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<MailItem>{
+        implements LoaderManager.LoaderCallbacks<MailItem> {
     public static final String KEY_REPLY = "reply";
     private static final String LOG_TAG = MailEditorActivity.class.getSimpleName();
     private static final int MAIL_LOADER_ID = 1;
@@ -40,7 +39,7 @@ public class MailEditorActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mail_editor);
 
-        // Init views
+        // Initialize views
         initializeWidgets();
     }
 
@@ -90,7 +89,7 @@ public class MailEditorActivity extends AppCompatActivity
         }
     }
 
-    private void sendMail () {
+    private void sendMail() {
         getValues();
         SendMail sendMail = new SendMail(this, toEmail, ccEmail, subject, content);
         sendMail.execute();
@@ -107,6 +106,11 @@ public class MailEditorActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * This method load the reply to information such as recipients, subject, previous content
+     *
+     * @param mailItem The mail item what will be parse to contents
+     */
     private void loadReplyInfo(MailItem mailItem) {
 
         String replyTo = null;
@@ -116,7 +120,12 @@ public class MailEditorActivity extends AppCompatActivity
             e.printStackTrace();
         }
         editorTo.setText(replyTo);
-        editorSubject.setText(mailItem.getSubject());
+        String subject = mailItem.getSubject();
+        if ("Re:".equals(subject.substring(0, 3))) {
+            editorSubject.setText(subject);
+        } else {
+            editorSubject.setText("Re: " + subject);
+        }
 
         content = mailItem.getContent();
 
@@ -126,18 +135,15 @@ public class MailEditorActivity extends AppCompatActivity
     public Loader<MailItem> onCreateLoader(int id, Bundle args) {
         // Get extra information of intent from previous activity
         int msgNumber = getIntent().getExtras().getInt(KEY_REPLY);
-        final String HOST = "imap.serdao.com";
-        final String STORE_TYPE = "imap";
-        final String USER = "tuananh.tran@serdao.com";
-        final String PASSWORD = "Toimailatoi_87";
-        // Return new FetchMailByMessageNumberLoader
-        return new FetchMailByMessageNumberLoader(
-                this, HOST, STORE_TYPE, USER, PASSWORD, msgNumber);
+
+        // Return new FetchMailLoader
+        return new CheckMailLoader.MessageNumberLoader(
+                this, msgNumber);
     }
 
     @Override
     public void onLoadFinished(Loader<MailItem> loader, MailItem data) {
-        if(data != null){
+        if (data != null) {
             loadReplyInfo(data);
         }
     }

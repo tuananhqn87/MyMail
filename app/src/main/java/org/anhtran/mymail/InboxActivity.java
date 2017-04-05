@@ -4,15 +4,12 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -22,6 +19,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.anhtran.mymail.session.SharePreferencesConstants;
 import org.anhtran.mymail.loader.CheckMailLoader;
 import org.anhtran.mymail.mail.MailItem;
 
@@ -31,14 +29,12 @@ import java.util.Map;
 
 
 public class InboxActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener,
-        LoaderManager.LoaderCallbacks<List<MailItem>>{
+        LoaderManager.LoaderCallbacks<List<MailItem>> {
 
     private static final String LOG_TAG = InboxActivity.class.getSimpleName();
 
     private static final int MAIL_LOADER_ID = 1;
-    DrawerLayout drawer;
-    NavigationView navigationView;
+    SharedPreferences preferences;
     private MailAdapter mMailAdapter;
     private Map<Integer, Integer> msgNumbers;
     private TextView emptyView;
@@ -51,25 +47,33 @@ public class InboxActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
-
         // initialize UI components
         initializeWidgets();
         // Add behavior on UI components
         addBehavior();
 
+        if (!isLogin()) {
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+        }
+
     }
+
     // Method to initialize UI components
     private void initializeWidgets() {
         emptyView = (TextView) findViewById(R.id.empty_view);
         spinner = (ProgressBar) findViewById(R.id.spinner);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         fab = (FloatingActionButton) findViewById(R.id.reply_fab);
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
         mMailListView = (ListView) findViewById(R.id.mail_list_view);
     }
 
     private void addBehavior() {
+        // Get shared preference
+        preferences = getApplicationContext().getSharedPreferences(
+                SharePreferencesConstants.PREFERENCE_NAME,
+                SharePreferencesConstants.PRIVATE_MODE);
+
         setSupportActionBar(toolbar);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -80,17 +84,7 @@ public class InboxActivity extends AppCompatActivity implements
             }
         });
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView.setNavigationItemSelectedListener(this);
         settingUpListView();
-
-
     }
 
     private void settingUpListView() {
@@ -98,11 +92,17 @@ public class InboxActivity extends AppCompatActivity implements
 
         mMailListView.setAdapter(mMailAdapter);
 
+        // Get system connectivity manager
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        // Get the active network information
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
+        // Check if the phone is connected with network
         boolean isConnected = (activeNetwork != null) &&
                 (activeNetwork.isConnectedOrConnecting());
+
+        // If the phone is connected with network then init the loader
+        // else set no internet connection text to empty view
         if (isConnected) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
             LoaderManager loaderManager = getLoaderManager();
@@ -116,26 +116,38 @@ public class InboxActivity extends AppCompatActivity implements
             spinner.setVisibility(View.GONE);
         }
 
-
+        // Set on mail item click listener to open the mail
         mMailListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Open email viewer to show email content
                 Intent viewerIntent = new Intent(InboxActivity.this, EmailViewerActivity.class);
+
+                // Put message number to intent extra then the opened activity will used it
                 viewerIntent.putExtra(EmailViewerActivity.KEY_EXTRA, msgNumbers.get(position));
+
+                // Start the activity
                 startActivity(viewerIntent);
             }
         });
     }
 
+    /**
+     * Check the app is logged in or not
+     *
+     * @return Return true if the app is logged in with a mail account
+     */
+    private boolean isLogin() {
+        return preferences.getBoolean(SharePreferencesConstants.IS_LOGGED_IN, false);
+    }
+
+    // Exit app on back pressed
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        Intent i = new Intent(Intent.ACTION_MAIN);
+        i.addCategory(Intent.CATEGORY_HOME);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
     }
 
     @Override
@@ -153,58 +165,50 @@ public class InboxActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_logout) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean(SharePreferencesConstants.IS_LOGGED_IN, false);
+            editor.clear();
+            editor.commit();
+
+            // This intent is to open login activity
+            Intent i = new Intent(this, LoginActivity.class);
+            // Closing all the Activities from stack
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            // Add new Flag to start new Activity
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            // Start login activity with this intent
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
     @Override
     public Loader<List<MailItem>> onCreateLoader(int id, Bundle args) {
-        String imapHost = "imap.serdao.com";
-        String storeType = "imap";
-        String user = "tuananh.tran@serdao.com";
-        String password = "Toimailatoi_87";
-        return new CheckMailLoader(this, imapHost, storeType, user, password);
+        return new CheckMailLoader.AllMessageLoader(this);
     }
 
     @Override
     public void onLoadFinished(Loader<List<MailItem>> loader, List<MailItem> mailItems) {
         spinner.setVisibility(View.GONE);
 
+        // Clear old adapter content before loading new content to adapter
         mMailAdapter.clear();
 
-        if( mailItems !=null && !mailItems.isEmpty()) {
+        // If mail items list is not null and is not empty, add items list to mail adapter
+        // otherwise set empty view to "No Email Found"
+        if (mailItems != null && !mailItems.isEmpty()) {
             mMailAdapter.addAll(mailItems);
         } else {
             emptyView.setText(R.string.no_email);
         }
+
+        // Get the message numbers list from mail adapter,
+        // the numbers in this list are used to make intent to open mail
         msgNumbers = mMailAdapter.getMsgNumbers();
     }
 

@@ -1,10 +1,6 @@
 <resources>
     <string name="app_name">My Mail</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_settings">Settings</string>
     <string name="editor_label_new_mail">New Email</string>
     <string name="editor_action_send">Send</string>
     <string name="editor_action_save">Save</string>
@@ -21,4 +17,20 @@
     <string name="editor_reply">Reply</string>
     <string name="editor_loading">Loading ...</string>
     <string name="editor_reply_message">Reply message</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_mail_provider">Mail Provider</string>
+    <string name="login_imap_server">Incoming Mail Server (IMAP)</string>
+    <string name="login_imap_hint">imap.yourdomain.com</string>
+    <string name="login_smtp_server">Outgoing Mail Server (SMTP)</string>
+    <string name="login_smtp_hint">smtp.yourdomain.com</string>
+    <string name="login_security">Security</string>
+    <string name="login_connect">Connect</string>
+    <string name="login_email_hint">email@yourdomain.com</string>
+    <string name="login_password_hint">yourpassword</string>
+    <string name="login_port">Port</string>
+    <string name="login_imap_port_hint">143</string>
+    <string name="login_smtp_port_hint">25</string>
+    <string name="inbox_logout">Logout</string>
+    <string name="login_activity_label">Add Mail Account</string>
 </resources>

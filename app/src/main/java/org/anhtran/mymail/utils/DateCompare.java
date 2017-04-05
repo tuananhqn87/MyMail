@@ -11,7 +11,8 @@ import javax.mail.MessagingException;
 
 public class DateCompare {
 
-    private DateCompare(){}
+    private DateCompare() {
+    }
 
     public static class DescendingOrderCompare implements Comparator<Message> {
         @Override
