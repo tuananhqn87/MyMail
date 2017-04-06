@@ -15,19 +15,26 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
-import org.anhtran.mymail.mail.FetchMailByMessageNumberLoader;
+import org.anhtran.mymail.loader.CheckMailLoader;
 import org.anhtran.mymail.mail.MailItem;
 
 public class EmailViewerActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<MailItem>{
-    private static final String LOG_TAG = InboxActivity.class.getSimpleName();
-    private static final int MAIL_LOADER_ID = 1;
+        implements LoaderManager.LoaderCallbacks<MailItem> {
+    // Key of intent extra
     public static final String KEY_EXTRA = "MailMessage";
+
+    // Log tag to find the log when debug
+    private static final String LOG_TAG = InboxActivity.class.getSimpleName();
+
+    // Loader ID for initializing loader
+    private static final int MAIL_LOADER_ID = 1;
 
     // Declares web view where email's content will appear
     private WebView emailViewer;
+
     // Spinner is used when waiting for loader finished
     private ProgressBar viewerSpinner;
+
     // The floating button to reply email
     private FloatingActionButton replyFab;
 
@@ -36,7 +43,11 @@ public class EmailViewerActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email_viewer);
+
+        // Init views
         initializeWidgets();
+
+        // Add views' behavior
         addBehavior();
     }
 
@@ -48,32 +59,36 @@ public class EmailViewerActivity extends AppCompatActivity
 
     public void addBehavior() {
 
+        // Set on click listener of floating button
         replyFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // The intent to start reply activity
                 Intent replyMailIntent = new Intent(
                         EmailViewerActivity.this, MailEditorActivity.class);
+                // Put message ID that this activity receive from InboxActivity
                 replyMailIntent.putExtra(MailEditorActivity.KEY_REPLY,
                         getIntent().getExtras().getInt(KEY_EXTRA));
+                // Start the reply activity when this button is clicked
                 startActivity(replyMailIntent);
             }
         });
 
-
         // Check network connection
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Get network info
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
         boolean isConnected = (activeNetwork != null) &&
                 (activeNetwork.isConnectedOrConnecting());
+
         if (isConnected) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
             LoaderManager loaderManager = getLoaderManager();
 
-            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-            // because this activity implements the LoaderCallbacks interface).
+            // Initialize the loader
             loaderManager.initLoader(MAIL_LOADER_ID, null, this);
         } else {
             // Show no internet warning if there is no internet connection
@@ -111,13 +126,8 @@ public class EmailViewerActivity extends AppCompatActivity
         // Get extra information of intent from previous activity
         int msgNumber = getIntent().getExtras().getInt(KEY_EXTRA);
 
-        final String HOST = "imap.serdao.com";
-        final String STORE_TYPE = "imap";
-        final String USER = "tuananh.tran@serdao.com";
-        final String PASSWORD = "Toimailatoi_87";
-        // Return new FetchMailByMessageNumberLoader
-        return new FetchMailByMessageNumberLoader(
-                this, HOST, STORE_TYPE, USER, PASSWORD, msgNumber);
+        // Return new FetchMailLoader
+        return new CheckMailLoader.MessageNumberLoader(this, msgNumber);
     }
 
     @Override

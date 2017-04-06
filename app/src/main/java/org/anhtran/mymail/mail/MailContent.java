@@ -1,4 +1,4 @@
-package org.anhtran.mymail.utils;
+package org.anhtran.mymail.mail;
 
 import android.text.Html;
 import android.text.SpannableString;
@@ -10,6 +10,7 @@ import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.Part;
+import javax.mail.internet.InternetAddress;
 
 
 public class MailContent {
@@ -17,6 +18,7 @@ public class MailContent {
 
     private MailContent() {
     }
+
     /*
      * This method checks for content-type
      * based on which, it processes and
@@ -48,7 +50,7 @@ public class MailContent {
             int count = mp.getCount();
 
             // Check if multipart email contains text/html content or not
-            for(int i = 0; i < count; i++) {
+            for (int i = 0; i < count; i++) {
                 Part altPart = mp.getBodyPart(i);
                 if (altPart.isMimeType("text/html")) {
                     hasHtml = true;
@@ -65,7 +67,7 @@ public class MailContent {
                     bodyContent += altPart.getContent();
                 }
                 // If body part is not html and is plain text then add to content
-                else if(!hasHtml && altPart.isMimeType("text/plain")) {
+                else if (!hasHtml && altPart.isMimeType("text/plain")) {
                     String htmlContent = Html.toHtml(
                             new SpannableString((String) altPart.getContent()));
                     bodyContent += htmlContent;
@@ -93,34 +95,12 @@ public class MailContent {
     */
     public static String getHeader(Message m) throws Exception {
         Address[] from = m.getFrom();
-        Address[] to = m.getRecipients(Message.RecipientType.TO);
-        Address[] cc = m.getRecipients(Message.RecipientType.CC);
         Date sentDate = m.getSentDate();
         String header = "";
         // FROM
         if (from != null) {
-            for (int j = 0; j < from.length; j++) {
-                header += "<b>From:</b> " + from[j].toString();
-            }
+            header += "<b>From:</b> " + InternetAddress.toString(from);
             header += "<br>";
-        }
-
-        // TO
-        if (to != null) {
-            String recipients = "";
-            for (int j = 0; j < to.length; j++) {
-                recipients = recipients + to[j].toString();
-            }
-            header += "<b>To:</b> " + recipients + "<br>";
-        }
-
-        // CC
-        if (cc != null) {
-            String recipients = "";
-            for (int j = 0; j < cc.length; j++) {
-                recipients = recipients + cc[j].toString();
-            }
-            header +=  "<b>Cc:</b> " + recipients + "<br>";
         }
 
         // Sent date

@@ -1,4 +1,4 @@
-package org.anhtran.mymail.mail;
+package org.anhtran.mymail.utils;
 
 import java.util.Comparator;
 
@@ -11,7 +11,8 @@ import javax.mail.MessagingException;
 
 public class DateCompare {
 
-    private DateCompare(){}
+    private DateCompare() {
+    }
 
     public static class DescendingOrderCompare implements Comparator<Message> {
         @Override

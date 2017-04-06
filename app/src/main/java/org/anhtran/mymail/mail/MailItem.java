@@ -4,7 +4,6 @@ package org.anhtran.mymail.mail;
 import android.util.Log;
 
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -12,7 +11,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 
 
-public class MailItem implements Serializable {
+public class MailItem {
     private static final String LOG_TAG = MailItem.class.getSimpleName();
 
     private String content;
@@ -20,12 +19,12 @@ public class MailItem implements Serializable {
     private Message message;
 
 
-    public MailItem(Message message, int messageNumber){
+    public MailItem(Message message, int messageNumber) {
         this.message = message;
         this.messageNumber = messageNumber;
     }
 
-    public MailItem(Message message, String content){
+    public MailItem(Message message, String content) {
         this.message = message;
         this.content = content;
     }
@@ -49,6 +48,7 @@ public class MailItem implements Serializable {
         }
         return subject;
     }
+
     public String getContent() {
         if (content != null) {
             return content;
@@ -65,7 +65,7 @@ public class MailItem implements Serializable {
             e.printStackTrace();
         }
         SimpleDateFormat format = new SimpleDateFormat("EEE, MMM dd yyyy HH:mm");
-        if (receivedDate == null){
+        if (receivedDate == null) {
             return null;
         }
         return format.format(receivedDate);
